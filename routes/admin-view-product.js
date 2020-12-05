@@ -5,7 +5,7 @@ var categoryModel = require('../model/category');
 var category =categoryModel.find({});
 
 var productModel = require('../model/product');
-var product =productModel.find({}).sort({created_at: -1}); 
+var product =productModel.find({ isDeleted : false }).sort({created_at: -1}); 
 
 var contactModel = require('../model/contactUs')
 var contact = contactModel.find({})
@@ -34,7 +34,7 @@ next()
     .limit(perPage).exec(function(err,data){
       if(err) throw err;
       productModel.countDocuments({}).exec((err,count)=>{    
-        res.render('admin/admin-view-product',{title:'Mobile', 
+        res.render('admin/admin-view-product',{title:'Scoops Ice Cream Shop', 
         prodectRecord: data, 
         current: page,
         pages: Math.ceil(count / perPage),
@@ -51,7 +51,7 @@ next()
     var loginUser = req.session.adminName
 
     var pages;
-    productModel.findByIdAndDelete({_id:req.params.id}).exec(function(err){
+    productModel.findByIdAndUpdate({_id:req.params.id},{ isDeleted : true }).exec(function(err){
     if(err) throw err
     product.exec(function(err,data){
       res.redirect('/admin/ViewProduct')
@@ -68,8 +68,8 @@ next()
     product.skip((perPage * page) - perPage)
     .limit(perPage).exec(function(err,data){
       if(err) throw err;
-      productModel.countDocuments({}).exec((err,count)=>{    
-        res.render('admin/admin-view-product',{title:'Mobile',
+      productModel.countDocuments({ isDeleted : false }).exec((err,count)=>{    
+        res.render('admin/admin-view-product',{title:'Scoops Ice Cream Shop',
         prodectRecord: data,   
         current: page,
         pages: Math.ceil(count / perPage),

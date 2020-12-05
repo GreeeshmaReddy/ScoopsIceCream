@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 
 var categoryModel = require('../model/category');
-var category =categoryModel.find({});
+var category =categoryModel.find({ isDeleted : false });
 
 var productModel = require('../model/product');
 var product =productModel.find({}); 
@@ -39,7 +39,7 @@ router.get("/",checkLoginUser,function(req,res,next){
   var loginUser = req.session.adminName
   category.exec(function(err,data){
     if(err) throw err
-    res.render('admin/admin-view-category',{title:'Mobile',categoryRecord:data, loginUser:loginUser})
+    res.render('admin/admin-view-category',{title:'Scoops Ice Cream Shop',categoryRecord:data, loginUser:loginUser})
     
   })
 })
@@ -47,7 +47,7 @@ router.get("/",checkLoginUser,function(req,res,next){
   router.get('/delete/:id',checkLoginUser, function(req,res, next){
     var loginUser = req.session.adminName
 
-    categoryModel.findByIdAndDelete({_id:req.params.id}).exec(function(err){
+    categoryModel.findByIdAndUpdate({_id:req.params.id},{ isDeleted : true }).exec(function(err){
     if(err) throw err
     category.exec(function(err,data){
       res.redirect('/admin/ViewCategory')
